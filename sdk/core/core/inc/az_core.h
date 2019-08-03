@@ -11,6 +11,6 @@
 
 #define AZ_RANGE(A) { .begin = (A), .end = (A) + AZ_ARRAY_SIZE(A) }
 
-AZ_DEFINE_RANGE(char, az_string);
+AZ_DEFINE_RANGE(char const, az_string);
 
 #define AZ_STRING(S) { .begin = (S), .end = (S) + AZ_STRING_SIZE(S) }
