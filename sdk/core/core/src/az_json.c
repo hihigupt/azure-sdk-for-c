@@ -36,11 +36,13 @@ static inline az_error write_json_property(az_json_write_string f, az_json_prope
 
 static inline az_error write_json_object(az_json_write_string f, az_json_object o) {
   RETURN_ON_ERROR(write_char(f, '{'));
-  if (o.size > 0) {
-    RETURN_ON_ERROR(write_json_property(f, o.p[0]));
-    for (size_t i = 1; i < o.size; ++i) {
+  az_json_property *i = o.begin;
+  if (i != o.end) {
+    RETURN_ON_ERROR(write_json_property(f, *i));
+    ++i;
+    for (; i != o.end; ++i) {
       RETURN_ON_ERROR(write_char(f, ','));
-      RETURN_ON_ERROR(write_json_property(f, o.p[i]));
+      RETURN_ON_ERROR(write_json_property(f, *i));
     }
   }
   RETURN_ON_ERROR(write_char(f, '}'));
@@ -49,11 +51,12 @@ static inline az_error write_json_object(az_json_write_string f, az_json_object 
 
 static inline az_error write_json_array(az_json_write_string f, az_json_array a) {
   RETURN_ON_ERROR(write_char(f, '['));
-  if (a.size > 0) {
-    RETURN_ON_ERROR(az_json_write(f, a.p[0]));
-    for (size_t i = 1; i < a.size; ++i) {
+  az_json *i = a.begin;
+  if (i != a.end) {
+    RETURN_ON_ERROR(az_json_write(f, *i));
+    for (; i < a.end; ++i) {
       RETURN_ON_ERROR(write_char(f, ','));
-      RETURN_ON_ERROR(az_json_write(f, a.p[i]));
+      RETURN_ON_ERROR(az_json_write(f, *i));
     }
   }
   RETURN_ON_ERROR(write_char(f, ']'));
@@ -81,6 +84,7 @@ az_error az_json_write(az_json_write_string f, az_json json) {
     case AZ_JSON_TYPE_ARRAY:
       return write_json_array(f, json.array);
     case AZ_JSON_TYPE_NULL:
+    default:
       return write_json_null(f);
   }
 }
