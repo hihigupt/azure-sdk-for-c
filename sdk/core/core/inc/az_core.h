@@ -11,18 +11,16 @@
 extern "C" {
 #endif
 
-#define AZ_STRING_LITERAL_SIZE(S) (sizeof(S "") - 1)
+// Constant string.
+
+#define AZ_CSTR_SIZE(S) (sizeof(S "") - 1)
 
 typedef struct {
   char const *p;
   size_t size;
 } az_cstr;
 
-#define AZ_DEFINE_CSTR(NAME, STR) az_cstr const NAME = { .p = (STR), size = AZ_STRING_LITERAL_SIZE(STR) };
-
-inline char const *az_cstr_end(az_cstr a) {
-  return a.p + a.size;
-}
+#define AZ_DEFINE_CSTR(NAME, STR) az_cstr const NAME = { .p = (STR), size = AZ_CSTR_SIZE(STR) };
 
 // Static assert
 
