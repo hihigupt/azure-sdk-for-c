@@ -5,31 +5,24 @@
 #define AZ_CORE_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Range
-
-#define AZ_DEFINE_RANGE(TYPE, NAME) typedef struct { TYPE *begin; TYPE *end; } NAME;
-
-#define AZ_ARRAY_SIZE(A) (sizeof(A) / sizeof(*(A)))
-
-// String
-
-AZ_DEFINE_RANGE(char const, az_cstr);
-
-AZ_DEFINE_RANGE(char, az_str)
-
-// adding `""` to make sure that S is a `string literal`.
 #define AZ_STRING_LITERAL_SIZE(S) (sizeof(S "") - 1)
 
-#define _AZ_DEFINE_CSTR(NAME, ARRAY, VALUE) \
-  static char const ARRAY[] = VALUE; \
-  static az_cstr NAME = { .begin = ARRAY, .end = ARRAY + AZ_STRING_LITERAL_SIZE(VALUE) }
+typedef struct {
+  char const *p;
+  size_t size;
+} az_cstr;
 
-#define AZ_DEFINE_CSTR(NAME, VALUE) _AZ_DEFINE_CSTR(NAME, _ ## NAME, VALUE)
+#define AZ_DEFINE_CSTR(NAME, STR) az_cstr const NAME = { .p = (STR), size = AZ_STRING_LITERAL_SIZE(STR) };
+
+inline char const *az_cstr_end(az_cstr a) {
+  return a.p + a.size;
+}
 
 // Static assert
 
