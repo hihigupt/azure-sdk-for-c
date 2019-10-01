@@ -9,15 +9,18 @@
 extern "C" {
 #endif
 
-typedef az_result az_result_byte;
+typedef struct {
+  az_result result;
+  az_const_span span;
+} az_next_span_result;
 
 typedef struct {
   void *context;
-  az_result (*func)(void *const context, az_const_span *const out_span);
+  az_next_span_result (*func)(void *const context);
 } az_next_span;
 
-inline az_result az_next_span_call(az_next_span const next_span, az_const_span *const out_span) {
-  return next_span.func(next_span.context, out_span);
+inline az_next_span_result az_next_span_call(az_next_span const next_span) {
+  return next_span.func(next_span.context);
 }
 
 typedef struct {
@@ -26,13 +29,12 @@ typedef struct {
 } az_iter_state;
 
 inline az_iter_state az_iter_state_create(az_next_span const next_span) {
-  az_const_span span;
-  az_result const result = az_next_span_call(next_span, &span);
-  if (az_failed(result)) {
-    return (az_iter_state){.result = result,
+  az_next_span_result const r = az_next_span_call(next_span);
+  if (az_failed(r.result)) {
+    return (az_iter_state){.result = r.result,
                            .span_i = az_span_iter_create(az_const_span_empty())};
   }
-  az_span_iter const span_i = az_span_iter_create(span);
+  az_span_iter const span_i = az_span_iter_create(r.span);
   return (az_iter_state){.result = az_span_iter_current(&span_i), .span_i = span_i};
 }
 

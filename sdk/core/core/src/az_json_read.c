@@ -65,9 +65,9 @@ inline az_result az_json_stack_pop(az_json_state *const p_state) {
   return AZ_OK;
 }
 
-az_json_state az_json_state_create(az_const_span const buffer) {
+az_json_state az_json_state_create(az_iter const i) {
   return (az_json_state){
-      .i = az_span_iter_create(buffer),
+      .i = i,
       .stack = 1,
   };
 }
@@ -121,7 +121,7 @@ double az_json_number_to_double(az_dec_number const *p) {
 }
 
 az_result az_json_number_int_parse(
-    az_span_iter *const p_i,
+    az_iter *const p_i,
     az_dec_number *const p_n,
     int16_t const e_offset,
     az_result const first) {
@@ -138,15 +138,15 @@ az_result az_json_number_int_parse(
       }
       p_n->exp += e_offset + 1;
     }
-    az_span_iter_next(p_i);
-    c = az_span_iter_current(p_i);
+    az_iter_next(p_i);
+    c = az_iter_current(p_i);
     if (!isdigit(c)) {
       return AZ_OK;
     }
   };
 }
 
-az_result az_json_read_number_digit_rest(az_span_iter *const p_i, double *const out_value) {
+az_result az_json_read_number_digit_rest(az_iter *const p_i, double *const out_value) {
   az_dec_number i = {
       .sign = 1,
       .value = 0,
@@ -156,11 +156,11 @@ az_result az_json_read_number_digit_rest(az_span_iter *const p_i, double *const 
 
   // integer part
   {
-    az_result o = az_span_iter_current(p_i);
+    az_result o = az_iter_current(p_i);
     if (o == '-') {
       i.sign = -1;
-      az_span_iter_next(p_i);
-      o = az_span_iter_current(p_i);
+      az_iter_next(p_i);
+      o = az_iter_current(p_i);
       if (!isdigit(o)) {
         return az_json_error_unexpected(o);
       }
@@ -168,14 +168,14 @@ az_result az_json_read_number_digit_rest(az_span_iter *const p_i, double *const 
     if (o != '0') {
       AZ_RETURN_IF_NOT_OK(az_json_number_int_parse(p_i, &i, 0, o));
     } else {
-      az_span_iter_next(p_i);
+      az_iter_next(p_i);
     }
   }
 
   // fraction
-  if (az_span_iter_current(p_i) == '.') {
-    az_span_iter_next(p_i);
-    az_result o = az_span_iter_current(p_i);
+  if (az_iter_current(p_i) == '.') {
+    az_iter_next(p_i);
+    az_result o = az_iter_current(p_i);
     if (!isdigit(o)) {
       return az_json_error_unexpected(o);
     }
@@ -183,10 +183,10 @@ az_result az_json_read_number_digit_rest(az_span_iter *const p_i, double *const 
   }
 
   // exp
-  if (az_json_is_e(az_span_iter_current(p_i))) {
+  if (az_json_is_e(az_iter_current(p_i))) {
     // skip 'e' or 'E'
-    az_span_iter_next(p_i);
-    az_result c = az_span_iter_current(p_i);
+    az_iter_next(p_i);
+    az_result c = az_iter_current(p_i);
 
     // read sign, if any.
     int8_t e_sign = 1;
@@ -194,8 +194,8 @@ az_result az_json_read_number_digit_rest(az_span_iter *const p_i, double *const 
       case '-':
         e_sign = -1;
       case '+':
-        az_span_iter_next(p_i);
-        c = az_span_iter_current(p_i);
+        az_iter_next(p_i);
+        c = az_iter_current(p_i);
     }
 
     // expect at least one digit.
@@ -206,8 +206,8 @@ az_result az_json_read_number_digit_rest(az_span_iter *const p_i, double *const 
     uint16_t e_int = 0;
     do {
       e_int = e_int * 10 + (uint16_t)(c - '0');
-      az_span_iter_next(p_i);
-      c = az_span_iter_current(p_i);
+      az_iter_next(p_i);
+      c = az_iter_current(p_i);
     } while (isdigit(c));
     i.exp += e_int * e_sign;
   }
@@ -216,11 +216,11 @@ az_result az_json_read_number_digit_rest(az_span_iter *const p_i, double *const 
   return AZ_OK;
 }
 
-az_result az_json_read_string_rest(az_span_iter *const p_reader, az_const_span *const string) {
+az_result az_json_read_string_rest(az_iter *const p_reader, az_const_span *const string) {
   // skip '"'
   size_t const begin = p_reader->i;
   while (true) {
-    az_result c = az_span_iter_current(p_reader);
+    az_result c = az_iter_current(p_reader);
     switch (c) {
         // end of the string
       case '"': {
@@ -259,8 +259,8 @@ az_result az_json_read_string_rest(az_span_iter *const p_reader, az_const_span *
 
 // _value_
 az_result az_json_read_value(az_json_state *const p_state, az_json_value *const out_value) {
-  az_span_iter *const p_i = &p_state->i;
-  az_result const c = az_span_iter_current(p_i);
+  az_iter *const p_i = &p_state->i;
+  az_result const c = az_iter_current(p_i);
   if (isdigit(c)) {
     out_value->kind = AZ_JSON_VALUE_NUMBER;
     return az_json_read_number_digit_rest(p_i, &out_value->data.number);

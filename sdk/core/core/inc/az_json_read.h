@@ -20,7 +20,7 @@ enum {
   AZ_JSON_NO_MORE_ITEMS = AZ_MAKE_RESULT(AZ_JSON_FACILITY, 1),
 
   // error codes
-  AZ_JSON_ERROR_UNEXPECTED_END = AZ_MAKE_ERROR(AZ_JSON_FACILITY, 1),
+  AZ_JSON_ERROR_UNEXPECTED_END = AZ_MAKE_ERROR(AZ_JSON_FACILITY, 1),                               |
   AZ_JSON_ERROR_UNEXPECTED_CHAR = AZ_MAKE_ERROR(AZ_JSON_FACILITY, 2),
   AZ_JSON_ERROR_INVALID_STATE = AZ_MAKE_ERROR(AZ_JSON_FACILITY, 3),
   AZ_JSON_ERROR_STACK_OVERFLOW = AZ_MAKE_ERROR(AZ_JSON_FACILITY, 4),
@@ -37,10 +37,15 @@ typedef enum {
 } az_json_value_kind;
 
 typedef struct {
+  size_t begin;
+  size_t end;
+} az_json_string;
+
+typedef struct {
   az_json_value_kind kind;
   union {
     bool boolean;
-    az_const_span string;
+    az_json_string string;
     double number;
   } data;
 } az_json_value;
@@ -60,11 +65,11 @@ typedef enum {
 } az_json_stack_item;
 
 typedef struct {
-  az_span_iter i;
+  az_iter i;
   az_json_stack stack;
 } az_json_state;
 
-az_json_state az_json_state_create(az_const_span const buffer);
+az_json_state az_json_state_create(az_iter const i);
 
 az_result az_json_read(az_json_state *const p_state, az_json_value *const out_value);
 
