@@ -5,7 +5,7 @@
 #define AZ_JSON_READ_H
 
 #include <az_result.h>
-#include <az_span_reader.h>
+#include <az_iter.h>
 #include <az_str.h>
 
 #include <stdbool.h>
@@ -60,7 +60,7 @@ typedef enum {
 } az_json_stack_item;
 
 typedef struct {
-  az_span_reader reader;
+  az_span_iter i;
   az_json_stack stack;
 } az_json_state;
 

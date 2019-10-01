@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <az_json_read.h>
-#include <az_span_reader.h>
+#include <az_span_iter.h>
 
 #include <assert.h>
 #include <stdbool.h>
