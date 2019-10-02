@@ -7,9 +7,7 @@
 #include <az_result.h>
 #include <az_span.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <_az_cfg_prefix.h>
 
 typedef enum {
   AZ_LOGIN_INFO_KIND_USERNAME_AND_PASSWORD = 1,
@@ -29,8 +27,6 @@ typedef struct {
 
 az_result az_login(az_login_info const * const p_login_info);
 
-#ifdef __cplusplus
-}
-#endif
+#include <_az_cfg_suffix.h>
 
 #endif
