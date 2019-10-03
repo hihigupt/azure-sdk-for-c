@@ -5,8 +5,7 @@ cmake_minimum_required (VERSION 3.12)
 
 project (az_core LANGUAGES C)
 
-set(CURL_LIBRARY "-lcurl")
-find_package(CURL REQUIRED)
+# find_package(CURL REQUIRED)
 
 set(CMAKE_C_STANDARD 99)
 
@@ -26,7 +25,8 @@ add_library (az::core ALIAS az_core)
 add_executable (az_core_test test/main.c)
 
 target_link_libraries(az_core_test PRIVATE az_core)
-target_link_libraries(az_core_test PRIVATE curl::libcurl)
+target_include_directories(az_core_test PRIVATE ${CURL_SOURCE_DIR}/include)
+target_link_libraries(az_core_test PRIVATE libcurl)
 
 if (UNIX)
   target_link_libraries(az_core_test PRIVATE m)

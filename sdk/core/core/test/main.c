@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <curl.h>
+#include <curl/curl.h>
 
 int exit_code = 0;
 
@@ -140,6 +140,7 @@ AZ_STR_DECL(
     "}\n");
 
 int main() {
+  CURL * p = curl_easy_init();
   {
     az_json_state state = az_json_state_create(AZ_STR("    "));
     az_json_value value;

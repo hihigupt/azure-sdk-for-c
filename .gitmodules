@@ -16,3 +16,6 @@
 [submodule "sdk/core/core/curl"]
 	path = sdk/core/core/curl
 	url = https://github.com/curl/curl
+[submodule "dep/curl"]
+	path = dep/curl
+	url = https://github.com/curl/curl
