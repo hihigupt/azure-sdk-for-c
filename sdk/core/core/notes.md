@@ -1,3 +1,6 @@
+# Notes 
+
+```c
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // SPDX-License-Identifier: MIT
 
@@ -51,3 +54,4 @@ az_result az_tcp_send(az_ipaddress const address, az_iter const iter, az_write c
 #include <_az_cfg_suffix.h>
 
 #endif
+```

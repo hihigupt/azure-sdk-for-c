@@ -13,3 +13,6 @@
 [submodule "sdk/ustorageclient/deps/azure-c-shared-utility"]
 	path = sdk/storage/ustorageclient/deps/azure-c-shared-utility
 	url = https://github.com/Azure/azure-c-shared-utility.git
+[submodule "sdk/core/core/curl"]
+	path = sdk/core/core/curl
+	url = https://github.com/curl/curl

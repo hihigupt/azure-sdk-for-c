@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <curl.h>
 
 int exit_code = 0;
 
