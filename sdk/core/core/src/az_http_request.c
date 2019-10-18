@@ -22,8 +22,6 @@ typedef struct {
   az_const_span separator;
 } az_query_state;
 
-AZ_CALLBACK_DATA(az_query_state_to_pair_visitor, az_query_state *, az_pair_visitor)
-
 az_result az_query_to_spans(az_query_state * const p, az_pair const pair) {
   AZ_CONTRACT_ARG_NOT_NULL(p);
 
@@ -36,14 +34,14 @@ az_result az_query_to_spans(az_query_state * const p, az_pair const pair) {
   return AZ_OK;
 }
 
+AZ_CALLBACK_IMPL(az_query_to_spans, az_query_state *, az_pair_visitor)
+
 az_result az_build_header(az_pair const * header, az_span_visitor const visitor) {
   AZ_RETURN_IF_FAILED(visitor.func(visitor.data, header->key));
   AZ_RETURN_IF_FAILED(visitor.func(visitor.data, AZ_STR(": ")));
   AZ_RETURN_IF_FAILED(visitor.func(visitor.data, header->value));
   return AZ_OK;
 }
-
-AZ_CALLBACK_DATA(az_span_visitor_to_pair_visitor, az_span_visitor const *, az_pair_visitor)
 
 az_result az_header_to_spans(az_span_visitor const * const p, az_pair const pair) {
   AZ_CONTRACT_ARG_NOT_NULL(p);
@@ -52,6 +50,8 @@ az_result az_header_to_spans(az_span_visitor const * const p, az_pair const pair
   AZ_RETURN_IF_FAILED(p->func(p->data, az_crlf));
   return AZ_OK;
 }
+
+AZ_CALLBACK_IMPL(az_header_to_spans, az_span_visitor const *, az_pair_visitor)
 
 az_result az_http_request_to_spans(
     az_http_request const * const p_request,
@@ -69,8 +69,7 @@ az_result az_http_request_to_spans(
         .spans = spans,
         .separator = AZ_STR("?"),
       };
-      az_pair_visitor const pair_visitor
-          = az_query_state_to_pair_visitor(&state, az_query_to_spans);
+      az_pair_visitor const pair_visitor = az_query_to_spans_to_callback(&state);
       az_pair_seq const query = p_request->query;
       // for each query parameter apply `pair_visitor`
       AZ_RETURN_IF_FAILED(query.func(query.data, pair_visitor));
@@ -80,8 +79,7 @@ az_result az_http_request_to_spans(
 
   // headers
   {
-    az_pair_visitor const pair_visitor
-        = az_span_visitor_to_pair_visitor(&spans, az_header_to_spans);
+    az_pair_visitor const pair_visitor = az_header_to_spans_to_callback(&spans);
     az_pair_seq const headers = p_request->headers;
     AZ_RETURN_IF_FAILED(headers.func(headers.data, pair_visitor));
   }
@@ -109,8 +107,7 @@ az_result az_http_url_to_spans(
         .spans = spans,
         .separator = AZ_STR("?"),
       };
-      az_pair_visitor const pair_visitor
-          = az_query_state_to_pair_visitor(&state, az_query_to_spans);
+      az_pair_visitor const pair_visitor = az_query_to_spans_to_callback(&state);
       az_pair_seq const query = p_request->query;
       // for each query parameter apply `pair_visitor`
       AZ_RETURN_IF_FAILED(query.func(query.data, pair_visitor));
@@ -119,10 +116,10 @@ az_result az_http_url_to_spans(
   return AZ_OK;
 }
 
-AZ_CALLBACK_DATA(az_size_callback, size_t *, az_span_visitor)
+AZ_CALLBACK_IMPL(az_span_add_size, size_t *, az_span_visitor)
 
 az_result az_http_get_url_size(az_http_request const * const p_request, size_t * out) {
-  return az_http_url_to_spans(p_request, az_size_callback(out, az_span_add_size));
+  return az_http_url_to_spans(p_request, az_span_add_size_to_callback(out));
 }
 
 az_result az_http_url_to_new_str(az_http_request const * const p_request, char ** const out) {
@@ -135,7 +132,7 @@ az_result az_http_url_to_new_str(az_http_request const * const p_request, char *
     return AZ_ERROR_OUT_OF_MEMORY;
   }
   az_write_span_iter i = az_write_span_iter_create((az_span){ .begin = p, .size = size });
-  az_span_visitor sv = az_write_span_iter_to_span_visitor(&i);
+  az_span_visitor sv = az_write_span_iter_write_to_callback(&i);
   az_result const result = az_http_url_to_spans(p_request, sv);
   az_write_span_iter_write(&i, AZ_STR("\0"));
   if (az_failed(result)) {

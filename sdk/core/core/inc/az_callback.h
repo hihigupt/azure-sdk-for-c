@@ -29,6 +29,22 @@ typedef void * az_callback_data;
     }; \
   }
 
+/**
+ * Creates an inline function `CALLBACK {FUNC}_to_callback(DATA)`. The function returns
+ * a @CALLBACK `{ .func = FUNC, .data = DATA }`.
+ *
+ * @FUNC must have this signature `az_result (*)(DATA, AZ_CALLACK_ARG(CALLBACK))`.
+ */
+#define AZ_CALLBACK_IMPL(FUNC, DATA, CALLBACK) \
+  AZ_STATIC_ASSERT(sizeof(DATA) <= sizeof(az_callback_data)) \
+  AZ_INLINE CALLBACK AZ_CAT(FUNC, _to_callback)(DATA const data) { \
+    az_result (*const func)(DATA, AZ_CALLBACK_ARG(CALLBACK)) = FUNC; \
+    return (CALLBACK){ \
+      .func = (az_result(*)(az_callback_data, AZ_CALLBACK_ARG(CALLBACK)))func, \
+      .data = (az_callback_data)data, \
+    }; \
+  }
+
 #include <_az_cfg_suffix.h>
 
 #endif
