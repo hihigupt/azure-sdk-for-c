@@ -19,10 +19,10 @@ typedef void * az_callback_data;
     az_callback_data data; \
   } NAME;
 
-#define AZ_CALLBACK_DATA(NAME, DATA, CALLBACK) \
+#define AZ_CALLBACK_IMPL(NAME, DATA, CALLBACK) \
   AZ_STATIC_ASSERT(sizeof(DATA) <= sizeof(az_callback_data)) \
-  AZ_INLINE CALLBACK NAME( \
-      DATA const data, az_result (*const func)(DATA const, AZ_CALLBACK_ARG(CALLBACK) const)) { \
+  AZ_INLINE CALLBACK AZ_CAT(NAME, _callback)(DATA const data) { \
+    az_result (*const func)(DATA, AZ_CALLBACK_ARG(CALLBACK)) = NAME; \
     return (CALLBACK){ \
       .func = (az_result(*)(az_callback_data, AZ_CALLBACK_ARG(CALLBACK)))func, \
       .data = (az_callback_data)data, \

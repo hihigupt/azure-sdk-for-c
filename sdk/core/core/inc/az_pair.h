@@ -34,7 +34,9 @@ AZ_CALLBACK_DECL(az_pair_seq, az_pair_visitor)
  *
  * Note: the result of the function shouldn't be used after `*p_span` is destroyed.
  */
-az_pair_seq az_pair_span_to_seq(az_pair_span const * const p_span);
+az_result az_pair_span_to_seq(az_pair_span const * const context, az_pair_visitor const visitor);
+
+AZ_CALLBACK_IMPL(az_pair_span_to_seq, az_pair_span const *, az_pair_seq)
 
 #include <_az_cfg_suffix.h>
 
