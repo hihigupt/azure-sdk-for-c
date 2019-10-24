@@ -4,10 +4,8 @@
 #ifndef AZ_CURL_ADAPTER_H
 #define AZ_CURL_ADAPTER_H
 
-#include <az_callback.h>
-#include <az_http_request.h>
-#include <az_span_seq.h>
-#include <az_write_span_iter.h>
+#include <az_contract.h>
+#include <az_result.h>
 
 #include <curl/curl.h>
 #include <stdlib.h>
