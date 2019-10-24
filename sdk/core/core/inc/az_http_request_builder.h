@@ -20,29 +20,39 @@
 
 typedef struct {
   az_span buffer;
-  int16_t max_headers;
-  int16_t max_url_size;
   az_const_span method_verb;
-  int16_t retry_headers_start;
-  int16_t headers_end;
+  az_span url;
+  uint16_t max_url_size;
+  uint16_t max_headers;
+  uint16_t retry_headers_start;
+  uint16_t headers_end;
 } az_http_request_builder;
 
+extern az_const_span const AZ_HTTP_METHOD_VERB_GET;
+extern az_const_span const AZ_HTTP_METHOD_VERB_HEAD;
+extern az_const_span const AZ_HTTP_METHOD_VERB_POST;
+extern az_const_span const AZ_HTTP_METHOD_VERB_PUT;
+extern az_const_span const AZ_HTTP_METHOD_VERB_DELETE;
+extern az_const_span const AZ_HTTP_METHOD_VERB_TRACE;
+extern az_const_span const AZ_HTTP_METHOD_VERB_OPTIONS;
+extern az_const_span const AZ_HTTP_METHOD_VERB_CONNECT;
+extern az_const_span const AZ_HTTP_METHOD_VERB_PATCH;
+
 /**
- * @brief format buffer as a http request containing headers, url and body. Url max size is
- * initially set to a default size. use `az_http_request_builder_set_max_url_size` after init to
- * change this value if required
+ * @brief Formats buffer as a http request containing headers.
  *
- * @param out
- * @param buffer
+ * @param p_hrb
+ * @param buffer Buffer to store the
  * @param method_verb
  * @return az_result
  */
 az_result az_http_request_builder_init(
     az_http_request_builder * const p_hrb,
     az_span const buffer,
-    int16_t const max_url_size,
     az_const_span const method_verb,
-    az_const_span const initial_url);
+    az_const_span const initial_url,
+    uint16_t const max_url_size,
+    uint16_t const max_headers);
 
 /**
  * @brief set a query parameter. If the query name is not in url yet, it will be added, otherwise
@@ -78,14 +88,6 @@ az_result az_http_request_builder_append_header(
  * @return az_result
  */
 az_result az_http_request_builder_mark_retry_headers_start(az_http_request_builder * const p_hrb);
-
-/**
- * @brief
- *
- * @param p_hrb
- * @return az_result
- */
-az_result az_http_request_builder_remove_retry_headers(az_http_request_builder * const p_hrb);
 
 /**
  * @brief
