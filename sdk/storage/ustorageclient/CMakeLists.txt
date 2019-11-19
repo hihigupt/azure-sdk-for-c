@@ -23,6 +23,7 @@ option(use_azstorage_installed_dependencies "set use_installed_dependencies to O
 #Set ustorageclient c files
 set(azure_iot_ustorageclient_c_files
     ${PROJECT_SOURCE_DIR}/src/azstorage_blob.c
+    ${PROJECT_SOURCE_DIR}/src/azstorage_helper.c
 )
 
 #Add library of ustorageclient c files
@@ -37,7 +38,7 @@ set(azure_iot_ustorageclient_h_dir
 
 #Add include directories for this target and anyone linking against it
 target_include_directories(azure_iot_ustorageclient PUBLIC ${azure_iot_ustorageclient_h_dir})
-target_include_directories(azure_iot_ustorageclient PRIVATE
+target_include_directories(azure_iot_ustorageclient PUBLIC
     ${PROJECT_SOURCE_DIR}/deps/umock-c/inc
     ${PROJECT_SOURCE_DIR}/deps/azure-macro-utils-c/inc
     ${PROJECT_SOURCE_DIR}/deps/azure-c-shared-utility/inc
