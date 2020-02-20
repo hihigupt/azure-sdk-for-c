@@ -80,7 +80,7 @@ AZ_NODISCARD az_span _az_json_esc_encode(uint8_t c) {
     case '\t': {
       return AZ_SPAN_FROM_STR("\\t");
     }
-    default: { return az_span_null(); }
+    default: { return AZ_SPAN_NULL; }
   }
 }
 

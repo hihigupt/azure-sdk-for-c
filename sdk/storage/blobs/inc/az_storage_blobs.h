@@ -53,7 +53,7 @@ az_storage_blobs_blob_client_options_default(az_http_transport_options const * h
 
 AZ_NODISCARD AZ_INLINE az_storage_blobs_blob_upload_options
 az_storage_blobs_blob_upload_options_default() {
-  return (az_storage_blobs_blob_upload_options){ .option = az_span_null() };
+  return (az_storage_blobs_blob_upload_options){ .option = AZ_SPAN_NULL };
 }
 
 typedef struct {
