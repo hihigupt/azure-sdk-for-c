@@ -12,7 +12,8 @@
 
 #include <_az_cfg_prefix.h>
 
-az_result az_iot_telemetry_publish_topic_get(az_iot_identity identity, az_span properties, az_span *out_mqtt_topic);
+az_result az_iot_telemetry_publish_topic_get(az_iot_identity identity, az_span properties, 
+                                                    az_span mqtt_topic, az_span *out_mqtt_topic);
 
 #include <_az_cfg_suffix.h>
 

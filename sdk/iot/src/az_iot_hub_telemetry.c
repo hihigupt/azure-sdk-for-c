@@ -9,11 +9,11 @@ static az_span telemetry_topic_suffix = AZ_SPAN_LITERAL_FROM_STR("/messages/even
 
 
 az_result az_iot_telemetry_publish_topic_get(az_iot_identity identity, az_span properties, 
-                                                        az_span *out_mqtt_topic)
+                                                        az_span mqtt_topic, az_span *out_mqtt_topic)
 {
     az_result result;
 
-    if(az_span_capacity(*out_mqtt_topic) <
+    if(az_span_capacity(mqtt_topic) <
             az_span_length(identity._internal.device_id) +
             az_span_length(identity._internal.module_id) +
             az_span_length(properties) + 
