@@ -14,34 +14,24 @@ az_result az_iot_telemetry_publish_topic_get(az_iot_identity identity, az_span p
     az_result result;
 
     if(az_span_capacity(mqtt_topic) <
+            az_span_length(telemetry_topic_prefix) +
+            az_span_length(telemetry_topic_suffix) +
             az_span_length(identity._internal.device_id) +
             az_span_length(identity._internal.module_id) +
             az_span_length(properties) + 
-            az_span_length(telemetry_topic_prefix) +
-            az_span_length(telemetry_topic_suffix))
+            (az_span_length(properties) > 0 ? 1 : 0))
     {
         result = AZ_ERROR_OUT_OF_MEMORY;
     }
     else
     {
-        if((result = az_span_append(*out_mqtt_topic, telemetry_topic_prefix, out_mqtt_topic)) == AZ_OK)
-        {
-            if((result = az_span_append(*out_mqtt_topic, identity._internal.device_id, out_mqtt_topic)) == AZ_OK)
-            {
-                if((result = az_span_append(*out_mqtt_topic, telemetry_topic_suffix, out_mqtt_topic)) == AZ_OK)
-                {
-                    if((result = az_span_append(*out_mqtt_topic, telemetry_prop_delim, out_mqtt_topic)) == AZ_OK)
-                    {
-                        if((result = az_span_append(*out_mqtt_topic, properties, out_mqtt_topic)) == AZ_OK)
-                        {
-
-                        }
-                    }
-                }
-            }
-        }
+        AZ_RETURN_IF_FAILED(az_span_append(*out_mqtt_topic, telemetry_topic_prefix, out_mqtt_topic));
+        AZ_RETURN_IF_FAILED(az_span_append(*out_mqtt_topic, identity._internal.device_id, out_mqtt_topic));
+        AZ_RETURN_IF_FAILED(az_span_append(*out_mqtt_topic, telemetry_topic_suffix, out_mqtt_topic));
+        AZ_RETURN_IF_FAILED(az_span_append(*out_mqtt_topic, telemetry_prop_delim, out_mqtt_topic));
+        AZ_RETURN_IF_FAILED(az_span_append(*out_mqtt_topic, properties, out_mqtt_topic));
+        result = AZ_OK;
     }
-    
 
     return result;
 }
