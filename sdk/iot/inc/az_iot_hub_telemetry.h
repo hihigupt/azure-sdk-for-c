@@ -8,7 +8,6 @@
 #include <az_result.h>
 //#include "az_iot_mqtt.h"
 #include "az_iot_hub_connect.h"
-#include "az_iot_hub_properties.h"
 
 #include <_az_cfg_prefix.h>
 
